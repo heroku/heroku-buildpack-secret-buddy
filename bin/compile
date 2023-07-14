@@ -37,7 +37,17 @@ if [ -z "$SECRETBUDDY" ]; then
 fi
 
 BUILDPACK=$BUILDPACK_DIR/secret-buddy-buildpack
+
+echo $BUILDPACK_DIR
+echo BUILDPACK
+echo $BUILDPACK
+
+ls -la $BUILDPACK_DIR
+ls -la $BUILDPACK
+ls -la
 mkdir -p "$BUILD_DIR/.profile.d"
 
 cp $BUILDPACK_DIR/profile/secret-buddy.sh $BUILD_DIR/.profile.d/secret-buddy.sh
+
+echo "Copying buildpack exec to $BUILD_DIR/.profile.d/secret-buddy-buildpack"
 cp $BUILDPACK $BUILD_DIR/.profile.d/secret-buddy-buildpack
