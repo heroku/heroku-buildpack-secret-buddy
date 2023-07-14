@@ -20,7 +20,6 @@ func ExportEnvVarsFromMap(env string, rules map[string]string) (map[string]strin
 	}
 	var envVars map[string]string
 	envVars = consolidatedSecret.Current
-	fmt.Println(envVars)
 
 	for key, value := range rules {
 
@@ -92,6 +91,10 @@ func main() {
 		fmt.Println(err)
 	}
 
+	if variableX == "" {
+		fmt.Println("No rules found")
+	}
+
 	rules, err := ParseRules(variableX)
 	if err != nil {
 		fmt.Println(err)
@@ -100,6 +103,7 @@ func main() {
 
 	consolidatedSecret, err := ExportEnvVarsFromMap(envVar, rules)
 	if err != nil {
+		fmt.Println("Error parsing rules")
 		fmt.Println(err)
 		os.Exit(1)
 	}
