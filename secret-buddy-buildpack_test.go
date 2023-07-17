@@ -5,62 +5,98 @@ import (
 	"testing"
 )
 
-func TestGetEnvVar(t *testing.T) {
-	// Set up test cases
-	testCases := []struct {
-		key   string
-		value string
-		err   error
-	}{
-		{key: "FOO", value: "bar", err: nil},
-		{key: "coolVar", value: "Oh Yes", err: nil},
-		{key: "SECRETBUDDY_ENV", value: "{\"current\":{\"KEY1\":\"VALUE4\",\"KEY2\":\"VALUE4\"},\"previous\":{\"KEY1\":\"VALUE3\",\"KEY2\":\"VALUE3\"}}", err: nil},
-	}
-
-	// Set up environment variables for test cases
-	os.Setenv("FOO", "bar")
-	os.Setenv("coolVar", "Oh Yes")
-	os.Setenv("SECRETBUDDY_ENV", "{\"current\":{\"KEY1\":\"VALUE4\",\"KEY2\":\"VALUE4\"},\"previous\":{\"KEY1\":\"VALUE3\",\"KEY2\":\"VALUE3\"}}")
-
-	// Clean up environment variables after tests finish
-	defer os.Unsetenv("FOO")
-	defer os.Unsetenv("coolVar")
-	defer os.Unsetenv("SECRETBUDDY_ENV")
-
-	// Run tests
-	for _, tc := range testCases {
-		actual, err := GetEnvVar(tc.key)
-
-		// Check error values
-		if err != tc.err {
-			t.Errorf("Unexpected error. Expected: %v, got: %v", tc.err, err)
-		}
-
-		// Check return values
-		if actual != tc.value {
-			t.Errorf("Unexpected result. Expected: %v, got: %v", tc.value, actual)
-		}
-	}
-}
-
 func TestExportEnvVarsFromMap(t *testing.T) {
-	// Set up test case
-	input := `{"current": {"FOO": "bar", "KEY": "VALUE4"}, "previous": {"FOO": "noooo", "KEY": "VALUE3"}}`
-	expectedOutput := map[string]string{"FOO": "bar", "KEY": "VALUE4"}
+	// Define a test case
+	testCase := struct {
+		inputEnv       string
+		inputRules     map[string]string
+		expectedOutput map[string]string
+	}{
+		inputEnv: `{"current": {"DB_PASSWORD": "current_password"}, "previous": {"DB_PASSWORD": "previous_password"}}`,
+		inputRules: map[string]string{
+			"DB_PASSWORD": "current.DB_PASSWORD,previous.DB_PASSWORD",
+		},
+		expectedOutput: map[string]string{
+			"DB_PASSWORD": "current_password,previous_password",
+		},
+	}
 
-	// Run function
-	actualOutput, err := ExportEnvVarsFromMap(input)
+	// Call the ExportEnvVarsFromMap function with the test case input
+	outputValue, err := ExportEnvVarsFromMap(testCase.inputEnv, testCase.inputRules)
+
+	// Check if there was an error
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	// Check output
-	for key, expectedValue := range expectedOutput {
-		actualValue, ok := actualOutput[key]
-		if !ok {
-			t.Errorf("Missing key in output: %q", key)
-		} else if actualValue != expectedValue {
-			t.Errorf("Unexpected value for key %q. Expected: %q, got: %q", key, expectedValue, actualValue)
+	// Check if the output matches the expected output
+	for key, value := range testCase.expectedOutput {
+		if outputValue[key] != value {
+			t.Errorf("Expected %s but got %s for key %s", value, outputValue[key], key)
 		}
+	}
+}
+
+func TestParseRules(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput map[string]string
+	}{
+		input: `{"DB_PASSWORD": "current.DB_PASSWORD"}`,
+		expectedOutput: map[string]string{
+			"DB_PASSWORD": "current.DB_PASSWORD",
+		},
+	}
+
+	// Call the ParseRules function with the test case input
+	outputValue, err := ParseRules(testCase.input)
+
+	// Check if there was an error
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// Check if the output matches the expected output
+	for key, value := range testCase.expectedOutput {
+		if outputValue[key] != value {
+			t.Errorf("Expected %s but got %s for key %s", value, outputValue[key], key)
+		}
+	}
+}
+
+func TestGetEnvVar(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "SECRETBUDDY_ENV",
+		expectedOutput: "test_value",
+	}
+
+	// Set the environment variable for the test case
+	err := os.Setenv(testCase.input, testCase.expectedOutput)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// Call the GetEnvVar function with the test case input
+	outputValue, err := GetEnvVar(testCase.input)
+
+	// Check if there was an error
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
+
+	// Unset the environment variable for the test case
+	err = os.Unsetenv(testCase.input)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
 	}
 }
