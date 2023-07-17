@@ -94,9 +94,4 @@ func TestGetEnvVar(t *testing.T) {
 		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
 	}
 
-	// Unset the environment variable for the test case
-	err = os.Unsetenv(testCase.input)
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
 }
