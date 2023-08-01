@@ -21,6 +21,9 @@ func ExportEnvVarsFromMap(env string, rules map[string]string) (map[string]strin
 	var envVars map[string]string
 	envVars = consolidatedSecret.Current
 
+	if len(rules) == 0 {
+		return envVars, nil
+	}
 	for key, value := range rules {
 
 		if strings.Contains(value, "[") {
@@ -89,10 +92,6 @@ func main() {
 	variableX, err := GetEnvVar("HEROKU_SECRETS_CONFIG")
 	if err != nil {
 		fmt.Println(err)
-	}
-
-	if variableX == "" {
-		fmt.Println("No rules found")
 	}
 
 	rules, err := ParseRules(variableX)
