@@ -94,6 +94,12 @@ func main() {
 		fmt.Println(err)
 	}
 
+	// If HEROKU_SECRETS_CONFIG is not set, we will use an empty rules map
+	// so the exported var will be the same as the current secret
+	if variableX == "" {
+		variableX = "{}"
+	}
+
 	rules, err := ParseRules(variableX)
 	if err != nil {
 		fmt.Println(err)
