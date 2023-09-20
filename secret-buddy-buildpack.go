@@ -118,8 +118,9 @@ func main() {
 		env_var := os.Getenv(key)
 		filter_value := strings.Replace(value, "\n", "\\n", -1)
 		filter_value = strings.Replace(filter_value, "'", "\\\\'", -1)
+		filter_value = "'" + filter_value + "'"
 		if env_var == "" {
-			fmt.Printf("export %s='%v'\n", key, filter_value)
+			fmt.Printf("export %s=%v\n", key, filter_value)
 		}
 	}
 

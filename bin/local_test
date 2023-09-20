@@ -15,8 +15,8 @@ BUILDPACK=$BUILDPACK_DIR/secret-buddy-buildpack
 
 mkdir -p $BUILDPACK_DIR/.profile.d
 
-echo $BUILDPACK_DIR
-echo $BUILDPACK
+go build .
 
 ($BUILDPACK) > $BUILDPACK_DIR/.profile.d/secret-buddy-env.sh
 source $BUILDPACK_DIR/.profile.d/secret-buddy-env.sh
+env | grep SECRETBUDDY
