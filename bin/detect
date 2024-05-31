@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 # bin/detect <build-dir>
 
-echo 'SecretBuddy Fun Times'
+echo 'Secretbuddy'
 exit 0
