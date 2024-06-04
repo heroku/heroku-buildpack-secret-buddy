@@ -49,7 +49,7 @@ mkdir -p "$BUILD_DIR/.profile.d"
 cp $BUILDPACK_DIR/profile/secret-buddy.sh $BUILD_DIR/.profile.d/0000-secret-buddy.sh
 
 echo "Copying buildpack exec to $BUILD_DIR/.profile.d/secret-buddy-buildpack"
-cp $BUILDPACK $BUILD_DIR/.profile.d/secret-buddy-buildpack 
+cp $BUILDPACK $BUILD_DIR/.profile.d/secret-buddy-buildpack
 
 echo "BUILD_DIR: $BUILD_DIR"
 ls -la $BUILD_DIR
