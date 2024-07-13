@@ -69,6 +69,38 @@ func TestExportEnvVarsFromMapEmptyRules(t *testing.T) {
 	}
 }
 
+func TestExportEnvVarsFromMapEmptyRulesWithTickChar(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		inputEnv       string
+		inputRules     map[string]string
+		expectedOutput map[string]string
+	}{
+		inputEnv: `{"current": {"DB_PASSWORD": "current'password'"}, "previous": {"DB_PASSWORD": "previous_password"}}`,
+		inputRules: map[string]string{
+			"": "",
+		},
+		expectedOutput: map[string]string{
+			"DB_PASSWORD": "current'password'",
+		},
+	}
+
+	// Call the ExportEnvVarsFromMap function with the test case input
+	outputValue, err := ExportEnvVarsFromMap(testCase.inputEnv, testCase.inputRules)
+
+	// Check if there was an error
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// Check if the output matches the expected output
+	for key, value := range testCase.expectedOutput {
+		if outputValue[key] != value {
+			t.Errorf("Expected %s but got %s for key %s", value, outputValue[key], key)
+		}
+	}
+}
+
 func TestParseRules(t *testing.T) {
 	// Define a test case
 	testCase := struct {
@@ -154,4 +186,106 @@ func TestGetEnvVar(t *testing.T) {
 		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
 	}
 
+}
+
+func TestEscapedStringsSecret(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "SECRETBUDDY_SECRET",
+		expectedOutput: "SECRETBUDDY_SECRET",
+	}
+
+	outputValue := EscapeSingleQuote(testCase.input)
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
+}
+
+func TestEscapedStringsQuoteSecret(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "SECRETBUDDY'SECRET",
+		expectedOutput: "SECRETBUDDY'\\''SECRET",
+	}
+
+	outputValue := EscapeSingleQuote(testCase.input)
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
+}
+
+func TestEscapedStringsTWOQuoteSecret(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "SECRET'BUDDY'SECRET",
+		expectedOutput: "SECRET'\\''BUDDY'\\''SECRET",
+	}
+
+	outputValue := EscapeSingleQuote(testCase.input)
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
+}
+
+func TestEscapedStringsEmptySecret(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "",
+		expectedOutput: "",
+	}
+
+	outputValue := EscapeSingleQuote(testCase.input)
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
+}
+
+func TestEscapedStringsSingleTick(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "'",
+		expectedOutput: "'\\''",
+	}
+
+	outputValue := EscapeSingleQuote(testCase.input)
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
+}
+
+func TestEscapedStringsSecretDoubleQuote(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "SECRET\"BUDDY\"_SECRET",
+		expectedOutput: "SECRET\"BUDDY\"_SECRET",
+	}
+
+	outputValue := EscapeSingleQuote(testCase.input)
+	// Check if the output matches the expected output
+	if outputValue != testCase.expectedOutput {
+		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+	}
 }
