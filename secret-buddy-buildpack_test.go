@@ -278,18 +278,59 @@ func TestGetEnvVar(t *testing.T) {
 	}
 
 	// Call the GetEnvVar function with the test case input
-	outputValue, err := GetEnvVar(testCase.input)
+	outputValue, exists := os.LookupEnv(testCase.input)
 
 	// Check if there was an error
+	if exists {
+		// Check if the output matches the expected output
+		if outputValue != testCase.expectedOutput {
+			t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+		}
+	} else {
+		t.Errorf("Expected that exists is true but got %v", exists)
+	}
+}
+
+func TestNotExistsGetEnvVar(t *testing.T) {
+	// Define a test case
+
+	// Call the GetEnvVar function with the test case input
+	_, exists := os.LookupEnv("NO_EXIST_DUMMY_ENV")
+
+	// Check if there was an error
+	if exists {
+		t.Errorf("EnvVar should not exist")
+	}
+}
+
+func TestGetEmptyEnvVar(t *testing.T) {
+	// Define a test case
+	testCase := struct {
+		input          string
+		expectedOutput string
+	}{
+		input:          "SECRETBUDDY_ENV",
+		expectedOutput: "",
+	}
+
+	// Set the environment variable for the test case
+	err := os.Setenv(testCase.input, testCase.expectedOutput)
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	// Check if the output matches the expected output
-	if outputValue != testCase.expectedOutput {
-		t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
-	}
+	// Call the GetEnvVar function with the test case input
+	outputValue, exists := os.LookupEnv(testCase.input)
 
+	// Check if there was an error
+	if exists {
+		// Check if the output matches the expected output
+		if outputValue != testCase.expectedOutput {
+			t.Errorf("Expected %s but got %s", testCase.expectedOutput, outputValue)
+		}
+	} else {
+		t.Errorf("Expected that exists is true but got %v", exists)
+	}
 }
 
 func TestEscapedStringsSecret(t *testing.T) {
