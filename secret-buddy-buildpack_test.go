@@ -293,16 +293,9 @@ func TestGetEnvVar(t *testing.T) {
 
 func TestNotExistsGetEnvVar(t *testing.T) {
 	// Define a test case
-	testCase := struct {
-		input          string
-		expectedOutput string
-	}{
-		input:          "SECRETBUDDY_ENV",
-		expectedOutput: "test_value",
-	}
 
 	// Call the GetEnvVar function with the test case input
-	_, exists := os.LookupEnv(testCase.input)
+	_, exists := os.LookupEnv("NO_EXIST_DUMMY_ENV")
 
 	// Check if there was an error
 	if exists {
