@@ -37,6 +37,8 @@ if [ -z "$SECRETBUDDY" ]; then
 fi
 
 BUILDPACK=$BUILDPACK_DIR/secret-buddy-buildpack
+CHECK_SECRETBUDDY_ENVS_SCRIPT=$BUILDPACK_DIR/check-secretbuddy
+TARGET_BIN_DIR=$BUILD_DIR/bin
 
 # uncomment for debugging
 #ls -la $BUILDPACK_DIR
@@ -47,6 +49,17 @@ cp $BUILDPACK_DIR/profile/secret-buddy.sh $BUILD_DIR/.profile.d/0000-secret-budd
 
 echo "Copying buildpack exec to $BUILD_DIR/.profile.d/secret-buddy-buildpack"
 cp $BUILDPACK $BUILD_DIR/.profile.d/secret-buddy-buildpack
+
+# Now, for copying the check-secretbuddy script, first check if the /bin directory exists
+# If it doesn't, create it
+if [ ! -d "$TARGET_BIN_DIR" ]; then
+    mkdir "$TARGET_BIN_DIR"
+fi
+
+# Copy the check-secretbuddy script to the /bin directory
+echo "Copying check-secretbuddy to $TARGET_BIN_DIR/check-secretbuddy"
+cp $CHECK_SECRETBUDDY_ENVS_SCRIPT $TARGET_BIN_DIR/check-secretbuddy
+chmod 755 $TARGET_BIN_DIR/check-secretbuddy
 
 #ls -la $BUILD_DIR/bin
 
