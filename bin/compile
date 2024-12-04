@@ -33,7 +33,7 @@ echo "       WARNING: Secretbuddy does not support using secrets during build ti
 export_env_dir $ENV_DIR
 SECRETBUDDY="$SECRETBUDDY_ENV"
 if [ -z "$SECRETBUDDY" ]; then
-  echo "       Warning: SECRETBUDDY_ENV not found. This may be due to a missing addon or consolidation rules."
+  echo "       WARNING: SECRETBUDDY_ENV not found. This may be due to a missing addon or consolidation rules."
 fi
 
 BUILDPACK=$BUILDPACK_DIR/secret-buddy-buildpack
