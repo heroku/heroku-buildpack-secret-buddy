@@ -29,3 +29,6 @@ So, add the buildpack to an app, and deploy this app. Check the `Activity > Buil
 
 ## Changes in the worker
 Any change in the worker must be built, pushed, and published. So, make any necessary changes, and locally run `make build` and the `secret-buddy-buildpack` binary will be built for Linux. Push this change, and publish the new buildpack version as explained above. Then re-deploy the application that has this buildpack.
+
+## check-secretbuddy script
+This Python script will be copied into the `bin` directory of the application, so that it can be run with the command `heroku run -a <APP NAME> -- bin/check-secretbuddy`. The copy process is done in the `compile` script, along with the change of attributes to `755` (executable). For testing, the Python script can be run it locally, and it performs a series of checks, like the listing of all secretbuddy vars (from `SECRETBUDDY_ENV`, the verification that all the secretbuddy vars are OS env vars, etc).
